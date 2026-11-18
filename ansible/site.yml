@@ -1,0 +1,22 @@
+---
+- name: Verify Lab 3 Nginx infrastructure
+  hosts: local
+  gather_facts: false
+
+  tasks:
+    - name: Check Nginx web server response
+      ansible.builtin.uri:
+        url: http://172.17.0.1:8080
+        method: GET
+        status_code: 200
+      register: nginx_response
+
+    - name: Display web server result
+      ansible.builtin.debug:
+        msg: "Nginx HTTP status: {{ nginx_response.status }}"
+
+    - name: Confirm Nginx is responding
+      ansible.builtin.assert:
+        that:
+          - nginx_response.status == 200
+        success_msg: "Nginx infrastructure is working successfully!"

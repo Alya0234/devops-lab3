@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 3 DevOps Demo</title>
+</head>
+<body>
+    <h1>Lab 3 DevOps Application</h1>
+    <p id="status">Checking application...</p>
+    <div id="feature"></div>
+
+    <script>
+        fetch("/api/feature")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").textContent =
+                    "Application is running successfully.";
+
+                document.getElementById("feature").textContent =
+                    data.enabled
+                    ? "Welcome feature is ENABLED"
+                    : "Welcome feature is DISABLED";
+            })
+            .catch(() => {
+                document.getElementById("status").textContent =
+                    "Unable to load feature status.";
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "lab3-demo-app",
+  "version": "1.0.0",
+  "description": "DevOps Lab 3 application for feature flags and automated testing",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

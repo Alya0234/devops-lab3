@@ -1,0 +1,29 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# Node.js
+node_modules/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Raw terminal history
+terminal-history.txt
+
+# Unverified Jenkins pipeline drafts
+Jenkinsfile
+jenkins/Jenkinsfile
+
+# Operating system
+.DS_Store
+Thumbs.db
