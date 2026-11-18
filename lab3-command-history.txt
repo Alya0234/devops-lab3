@@ -1,0 +1,425 @@
+mkdir lab3-devops-powershell
+cd lab3-devops-powershell
+app, terraform, ansible, monitoring, ``
+monitoring\prometheus, monitoring\grafana, ``
+monitoring\logstash, security, ``
+screenshots, jenkins
+Write-Host "`nDocker:"
+docker --version
+Write-Host "`nDocker Compose:"
+docker compose version
+Write-Host "`nTerraform:"
+terraform --version
+docker info --format '{{.ServerVersion}}'
+docker run hello-world
+docker context ls
+docker context show
+docker info
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> docker info
+  agent: Docker AI Agent Runner (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-agent.exe
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-ai.exe
+  buildx: Docker Buildx (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-buildx.exe
+  compose: Docker Compose (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-compose.exe
+  debug: Get a shell into any image or container (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-debug.exe
+  desktop: Docker Desktop commands (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-desktop.exe
+  dhi: CLI for managing Docker Hardened Images (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-dhi.exe
+  extension: Manages Docker extensions (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-extension.exe
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-init.exe
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-mcp.exe
+  model: Docker Model Runner (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-model.exe
+  offload: Docker Offload (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-offload.exe
+    Path:     C:\Program Files\Docker\cli-plugins\docker-pass.exe
+  sandbox: "docker sandbox" is deprecated, use Docker Sandboxes instead (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-sandbox.exe
+  scout: Docker Scout (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-scout.exe
+  cdi: docker.com/gpu=webgpu
+ Init Binary: docker-init
+ Operating System: Docker Desktop (containerized)
+cd "$HOME\Desktop\lab3-devops-powershell"
+Write-Host "`nDocker:"`
+docker --version`
+Write-Host "`nDocker Compose:"`
+docker compose version`
+Write-Host "`nTerraform:"`
+terraform --version`
+Write-Host "`nAnsible:"`
+docker run --rm cytopia/ansible:latest ansible --version
+docker run --rm cytopia/ansible:latest ansible --version`
+Write-Host "`nAnsible:"`
+terraform --version`
+Write-Host "`nTerraform:"`
+docker compose version`
+Write-Host "`nDocker Compose:"`
+docker --version`
+Write-Host "`nDocker:"`
+docker info --format '{{.ServerVersion}}'
+Get-Service com.docker.service
+Get-Process "*docker*" -ErrorAction SilentlyContinue |`
+Get-Service com.docker.service
+Start-Service com.docker.service
+Get-Service com.docker.service
+docker desktop restart
+docker info --format '{{.ServerVersion}}'
+docker run hello-world
+docker run --rm cytopia/ansible:latest ansible --version
+terraform --version
+docker context inspect desktop-linux --format '{{.Endpoints.docker.Host}}'
+cd .\terraform
+terraform {`
+    docker = {`
+      source  = "kreuzwerker/docker"`
+provider "docker" {`
+  host = "npipe:////./pipe/dockerDesktopLinuxEngine"`
+resource "docker_image" "nginx" {`
+resource "docker_container" "nginx" {`
+  image = docker_image.nginx.image_id`
+  value = docker_container.nginx.name`
+  value = docker_container.nginx.id`
+terraform init
+terraform fmt
+terraform validate
+Get-ChildItem -Recurse .terraform\providers -Filter terraform-provider-docker_v4.2.0.exe | Unblock-File
+terraform validate
+terraform {`
+resource "terraform_data" "nginx" {`
+    command = "docker run -d --name ${var.container_name} -p ${var.external_port}:80 nginx:1.27-alpine"`
+    command = "docker rm -f ${self.input.container_name}"`
+  value = terraform_data.nginx.input.container_name`
+  value = terraform_data.nginx.id`
+terraform init -upgrade
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+docker ps
+cd ..\ansible
+localhost ansible_connection=local`
+    - name: Check Docker container is running`
+      ansible.builtin.command:`
+        cmd: docker inspect -f "{{.State.Running}}" lab3-nginx-powershell`
+      ansible.builtin.debug:`
+      ansible.builtin.uri:`
+        url: http://host.docker.internal:8080`
+      ansible.builtin.debug:`
+docker run --rm -v "${PWD}:/ansible" -w /ansible cytopia/ansible:latest ansible-playbook -i inventory.ini site.yml
+    - name: Check Docker container is running`
+      ansible.builtin.command:`
+          - docker`
+      ansible.builtin.debug:`
+      ansible.builtin.uri:`
+        url: http://host.docker.internal:8080`
+      ansible.builtin.debug:`
+docker run --rm -v "${PWD}:/ansible" -w /ansible cytopia/ansible:latest ansible-playbook -i inventory.ini site.yml
+      ansible.builtin.uri:`
+        url: http://host.docker.internal:8080`
+      ansible.builtin.debug:`
+      ansible.builtin.assert:`
+docker run --rm -v "${PWD}:/ansible" -w /ansible cytopia/ansible:latest ansible-playbook -i inventory.ini site.yml
+docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}'
+      ansible.builtin.uri:`
+      ansible.builtin.debug:`
+      ansible.builtin.assert:`
+docker run --rm -v "${PWD}:/ansible" -w /ansible cytopia/ansible:latest ansible-playbook -i inventory.ini site.yml
+  - job_name: "prometheus"`
+      - targets: ["prometheus:9090"]`
+'@ | Set-Content -Path .\monitoring\prometheus\prometheus.yml
+Get-ChildItem .\docker-compose.yml, .\monitoring\prometheus\prometheus.yml
+New-Item -ItemType Directory -Force .\monitoring\blackbox
+'@ | Set-Content .\monitoring\blackbox\blackbox.yml
+  - job_name: "prometheus"`
+      - targets: ["prometheus:9090"]`
+        replacement: blackbox-exporter:9115`
+'@ | Set-Content .\monitoring\prometheus\prometheus.yml
+docker compose config
+name: lab3-devops-powershell
+  blackbox-exporter:
+      - --config.file=/config/blackbox.yml
+    container_name: lab3-blackbox-exporter
+    image: prom/blackbox-exporter:v0.27.0
+        source: C:\Users\Alya\Desktop\lab3-devops-powershell\monitoring\blackbox\blackbox.yml
+        target: /config/blackbox.yml
+  grafana:
+    container_name: lab3-grafana
+      prometheus:
+    image: grafana/grafana:12.1.0
+  prometheus:
+      - --config.file=/etc/prometheus/prometheus.yml
+    container_name: lab3-prometheus
+      blackbox-exporter:
+    image: prom/prometheus:v3.5.0
+        source: C:\Users\Alya\Desktop\lab3-devops-powershell\monitoring\prometheus\prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+    name: lab3-devops-powershell_monitoring
+PS C:\Users\Alya\Desktop\lab3-devops-powershell>
+docker compose up -d
+docker ps -a --filter "name=lab3-prometheus"
+docker inspect lab3-prometheus --format '{{.State.Status}} | {{.Config.Image}} | {{json .Config.Labels}}'
+docker stop lab3-prometheus
+docker rename lab3-prometheus lab3-prometheus-old-wsl
+docker compose up -d
+docker ps -a --filter "name=lab3-grafana"
+docker stop lab3-grafana
+docker rename lab3-grafana lab3-grafana-old-wsl
+docker compose up -d
+docker ps
+New-Item -ItemType Directory -Force .\monitoring\logstash
+  elasticsearch {`
+    hosts => ["http://elasticsearch:9200"]`
+'@ | Set-Content .\monitoring\logstash\logstash.conf
+Get-ChildItem .\monitoring\logstash
+docker compose config
+docker compose up -d elasticsearch logstash kibana
+docker compose ps
+docker compose ps
+docker compose logs --tail=50 elasticsearch
+docker info --format "Total Memory: {{.MemTotal}}"
+docker compose logs --tail=30 elasticsearch
+docker compose ps
+docker compose logs --tail=30 logstash
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+docker compose ps
+docker ps
+docker ps -a --filter "ancestor=aquasec/trivy:0.58.2"
+docker inspect 780e2fc89d86 --format "Status={{.State.Status}} Error={{.State.Error}}"
+docker version
+docker context show
+docker start 780e2fc89d86
+docker inspect 780e2fc89d86 --format '{{json .State}}'
+docker rm -f 780e2fc89d86
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+docker compose ps
+docker ps
+docker stats --no-stream
+docker ps -a
+docker info --format "CPUs={{.NCPU}} Memory={{.MemTotal}}"
+docker ps -a
+docker compose stop kibana logstash elasticsearch
+cPS C:\Users\Alya\Desktop\lab3-devops-powershell> docker compose stop kibana logstash elasticsearch`
+ ✘ Container lab3-devops-powershell-logstash-1 Error Error while Stopping                         358.2s`
+ ✘ Container lab3-devops-powershell-kibana-1   Error Error while Stopping                          24.6s`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C`
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> ^C
+docker version
+docker ps -a
+docker ps
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+import http from "k6/http";`
+import { check, sleep } from "k6";`
+k6 version
+winget install k6 --source winget
+k6 version
+Get-ChildItem "C:\Program Files\k6"
+$env:Path += ";C:\Program Files\k6"
+k6 version
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+k6 run .\tests\load\load-test.js
+cd C:\Users\Alya\Desktop\lab3-devops-powershell\tests\browser
+npm install --save-dev @playwright/test
+npm.cmd install --save-dev @playwright/test
+npx.cmd playwright install chromium
+const { test, expect } = require('@playwright/test');`
+npx.cmd playwright test
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+winget search Trivy
+winget install AquaSecurity.Trivy --source winget
+trivy --version
+trivy --version
+where.exe trivy
+winget list AquaSecurity.Trivy
+Where-Object { $_.Name -like "*AquaSecurity.Trivy*" } |`
+ForEach-Object { Get-ChildItem $_.FullName -Recurse -Filter "trivy.exe" -ErrorAction SilentlyContinue } |`
+$trivy = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\AquaSecurity.Trivy_Microsoft.Winget.Source_8wekyb3d8bbwe\trivy.exe"
+& $trivy --version
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+New-Item -ItemType Directory -Force .\jenkins | Out-Null
+Get-Content .\jenkins\Jenkinsfile
+Get-Content .\Jenkinsfile
+sudo systemctl status jenkins --no-pager
+winget search Jenkins
+winget search Jenkins
+Get-Service Jenkins
+Get-Service Jenkins
+Get-Content "C:\Program Files\Jenkins\jenkins.xml" |`
+Get-Service Jenkins
+Get-CimInstance Win32_Service -Filter "Name='Jenkins'" |`
+Where-Object { $_.Name -like "*jenkins*" -or $_.Name -like "*java*" } |`
+Get-Content "C:\ProgramData\Jenkins\jenkins.err.log" -Tail 30 -ErrorAction SilentlyContinue
+Get-Content "C:\ProgramData\Jenkins\jenkins.out.log" -Tail 30 -ErrorAction SilentlyContinue
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+cd C:\Users\Alya\Desktop\lab3-devops-powershell
+Get-Content .\docker-compose.yml
+notepad .\docker-compose.yml
+Get-Content .\ansible\inventory.ini
+Get-Content .\ansible\site.yml
+Get-Content .\monitoring\prometheus\prometheus.yml
+Get-Content .\monitoring\blackbox\blackbox.yml
+Get-Content .\monitoring\logstash\logstash.conf
+git add .gitignore README.md ansible app docker-compose.yml monitoring security terraform tests
+Get-Content .\terraform\main.tf
+Get-Content .\terraform\variables.tf
+Get-Content .\terraform\outputs.tf
+Get-Content .\security\trivy-report.txt
+Get-Content .\terraform\main.tf
+Get-Content .\terraform\variables.tf
+Get-Content .\terraform\outputs.tf
+Get-Content .\security\trivy-report.txt
+Get-Content .\terraform\main.tf
+Get-Content .\terraform\variables.tf
+Get-Content .\terraform\outputs.tf
+Get-Content .\terraform\main.tf
+$pattern = 'terraform|ansible|docker|prometheus|grafana|elasticsearch|logstash|kibana|blackbox|k6|trivy|jenkins|playwright|lab3-devops-powershell'
+taskkill /IM "Docker Desktop.exe" /T /F
+docker --version
+cd docker-lab
+notepad Dockerfile
+Rename-Item Dockerfile.txt Dockerfile
+docker build -t sample-nginx:1.0 .
+docker images
+docker history sample-nginx:1.0
+docker run -d --name sample-container -p 8080:80 sample-nginx:1.0
+docker ps
+docker logs sample-container
+docker stop sample-container
+docker ps -a
+docker start sample-container
+docker ps
+docker --version
+docker ps
+docker ps -a
+docker images
+docker stop sample-container
+docker ps -a
+docker start sample-container
+docker ps
+docker stop sample-container
+docker rm sample-container
+docker ps -a
+docker login
+docker tag sample-nginx:1.0 alya2137/sample-nginx:1.0
+docker tag sample-nginx:1.0 alya123/sample-nginx:1.0
+docker images
+docker info | Select-String Username
+docker push alya2137/sample-nginx:1.0
+cd C:\Users\Alya\kubernetes-lab\docker-lab
+docker compose up -d
+docker compose ps
+docker compose logs
+docker compose down
+docker --version`
+docker ps
+minikube start --driver=docker --memory=2500mb --cpus=2
+docker ps -a
+docker info
+minikube start --driver=docker --memory=2500mb --cpus=2
+mkdir lab3-devops-powershell
+cd lab3-devops-powershell
+app, terraform, ansible, monitoring, ``
+monitoring\prometheus, monitoring\grafana, ``
+monitoring\logstash, security, ``
+screenshots, jenkins
+Write-Host "`nDocker:"
+docker --version
+Write-Host "`nDocker Compose:"
+docker compose version
+Write-Host "`nTerraform:"
+terraform --version
+docker info --format '{{.ServerVersion}}'
+docker run hello-world
+docker context ls
+docker context show
+docker info
+PS C:\Users\Alya\Desktop\lab3-devops-powershell> docker info
+  agent: Docker AI Agent Runner (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-agent.exe
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-ai.exe
+  buildx: Docker Buildx (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-buildx.exe
+  compose: Docker Compose (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-compose.exe
+  debug: Get a shell into any image or container (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-debug.exe
+  desktop: Docker Desktop commands (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-desktop.exe
+  dhi: CLI for managing Docker Hardened Images (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-dhi.exe
+  extension: Manages Docker extensions (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-extension.exe
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-init.exe
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-mcp.exe
+  model: Docker Model Runner (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-model.exe
+  offload: Docker Offload (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-offload.exe
+    Path:     C:\Program Files\Docker\cli-plugins\docker-pass.exe
+  sandbox: "docker sandbox" is deprecated, use Docker Sandboxes instead (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-sandbox.exe
+  scout: Docker Scout (Docker Inc.)
+    Path:     C:\Program Files\Docker\cli-plugins\docker-scout.exe
+  cdi: docker.com/gpu=webgpu
+ Init Binary: docker-init
+ Operating System: Docker Desktop (containerized)
+cd "$HOME\Desktop\lab3-devops-powershell"
+Write-Host "`nDocker:"``
+docker --version`
+Write-Host "`nDocker Compose:"``
+docker compose version`
+Write-Host "`nTerraform:"``
+terraform --version`
+Write-Host "`nAnsible:"``
+docker run --rm cytopia/ansible:latest ansible --version
+docker run --rm cytopia/ansible:latest ansible --version`
+Write-Host "`nAnsible:"``
+terraform --version`
+Write-Host "`nTerraform:"``
+docker compose version`
+Write-Host "`nDocker Compose:"``
+docker --version`
+Write-Host "`nDocker:"``
+docker info --format '{{.ServerVersion}}'
+Get-Service com.docker.service
+Get-Process "*docker*" -ErrorAction SilentlyContinue |``
+Get-Service com.docker.service
+Start-Service com.docker.service
+Get-Service com.docker.service
+docker desktop restart
+docker info --format '{{.ServerVersion}}'
+docker run hello-world
+docker run --rm cytopia/ansible:latest ansible --version
+terraform --version
+docker context inspect desktop-linux --format '{{.Endpoints.docker.Host}}'
+cd .\terraform
+$pattern = 'terraform|ansible|docker|prometheus|grafana|elasticsearch|logstash|kibana|blackbox|k6|trivy|jenkins|playwright|lab3-devops-powershell'
